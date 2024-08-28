@@ -1,0 +1,2 @@
+# smart-terminal
+Golang Project
