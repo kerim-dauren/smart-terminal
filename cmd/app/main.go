@@ -2,10 +2,18 @@ package main
 
 import (
 	"context"
-	"fmt"
+	"github.com/kerim-dauren/smart-terminal/api"
+	"github.com/kerim-dauren/smart-terminal/config"
+	"log"
 )
 
 func main() {
 	ctx := context.Background()
-	fmt.Println("Hello, World!", ctx)
+	cfg := config.LoadConfig()
+
+	application := &api.App{}
+
+	if err := application.Start(ctx, cfg); err != nil {
+		log.Fatal(err)
+	}
 }
