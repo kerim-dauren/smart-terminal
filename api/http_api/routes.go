@@ -2,7 +2,6 @@ package http_api
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/kerim-dauren/smart-terminal/api/http_api/middleware"
 	v1 "github.com/kerim-dauren/smart-terminal/api/http_api/v1"
 	"github.com/kerim-dauren/smart-terminal/internal/manager"
 	"github.com/kerim-dauren/smart-terminal/pkg/loggerx"
@@ -30,9 +29,7 @@ func NewHttpRouter(logger loggerx.Logger, managers *manager.Managers) *gin.Engin
 	// Routers
 	apiV1 := handler.Group("/api/v1")
 	{
-		apiV1.Use(middleware.RequestID())
 		v1.Register(apiV1, managers)
-
 	}
 
 	return handler

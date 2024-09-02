@@ -1,17 +1,30 @@
-package manager
+package domain
 
 import (
 	"fmt"
-	"math/big"
 	"time"
 )
 
 type KaspiPaymentRequest struct {
-	KaspiTransactionID   int64
-	Command              string
-	IMEI                 string
-	KaspiTransactionDate *time.Time
-	Sum                  *float64
+	TransactionID   int64
+	Command         string
+	IMEI            string
+	TransactionDate time.Time
+	Sum             float64
+}
+
+type KaspiPaymentResponse struct {
+	TransactionID         int64             `json:"txn_id,omitempty"`
+	Result                ApiResult         `json:"result"`
+	ProviderTransactionId string            `json:"prv_txn_id,omitempty"`
+	Sum                   float64           `json:"sum,omitempty"`
+	Comment               string            `json:"comment,omitempty"`
+	Fields                []*NameValueModel `json:"fields,omitempty"`
+}
+
+type NameValueModel struct {
+	Name  string      `json:"name"`
+	Value interface{} `json:"value"`
 }
 
 type ApiResult int
@@ -27,18 +40,4 @@ const (
 
 func (r ApiResult) MarshalJSON() ([]byte, error) {
 	return []byte(fmt.Sprintf("%d", r)), nil
-}
-
-type NameValueModel struct {
-	Name  string      `json:"name"`
-	Value interface{} `json:"value"`
-}
-
-type KaspiPaymentResponse struct {
-	TransactionId         *int64            `json:"txn_id,omitempty"`
-	Result                ApiResult         `json:"result"`
-	ProviderTransactionId *string           `json:"prv_txn_id,omitempty"`
-	Sum                   *big.Float        `json:"sum,omitempty"`
-	Comment               *string           `json:"comment,omitempty"`
-	Fields                *[]NameValueModel `json:"fields,omitempty"`
 }

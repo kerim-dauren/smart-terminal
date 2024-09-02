@@ -2,6 +2,7 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/kerim-dauren/smart-terminal/internal/domain"
 	"github.com/kerim-dauren/smart-terminal/internal/manager"
 	"net/http"
 	"strconv"
@@ -11,15 +12,13 @@ import (
 
 type PaymentController struct {
 	kaspiPaymentManager manager.KaspiPaymentManager
-	kaspiPayChan        chan manager.KaspiPaymentResponse
-	kaspiErrorChan      chan error
+	kaspiPayChan        chan *domain.KaspiPaymentResponse
 }
 
 func NewPaymentController(kaspiPaymentManager manager.KaspiPaymentManager) *PaymentController {
 	return &PaymentController{
 		kaspiPaymentManager: kaspiPaymentManager,
-		kaspiPayChan:        make(chan manager.KaspiPaymentResponse, 1),
-		kaspiErrorChan:      make(chan error, 1),
+		kaspiPayChan:        make(chan *domain.KaspiPaymentResponse, 1),
 	}
 }
 
@@ -61,21 +60,19 @@ func (c *PaymentController) ProcessKaspiRequest(ctx *gin.Context) {
 		sum = &parsedSum
 	}
 
-	request := &manager.KaspiPaymentRequest{
-		KaspiTransactionID:   transactionID,
-		Command:              command,
-		IMEI:                 imei,
-		KaspiTransactionDate: transactionDate,
-		Sum:                  sum,
+	request := &domain.KaspiPaymentRequest{
+		TransactionID:   transactionID,
+		Command:         command,
+		IMEI:            imei,
+		TransactionDate: *transactionDate,
+		Sum:             *sum,
 	}
 
-	go c.kaspiPaymentManager.Process(ctx.Request.Context(), request, c.kaspiPayChan, c.kaspiErrorChan)
+	go c.kaspiPaymentManager.Process(ctx.Request.Context(), request, c.kaspiPayChan)
 
 	select {
 	case result := <-c.kaspiPayChan:
 		ctx.JSON(http.StatusOK, result)
-	case err := <-c.kaspiErrorChan:
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	case <-ctx.Request.Context().Done():
 		ctx.JSON(http.StatusRequestTimeout, gin.H{"error": "Request timeout"})
 	}

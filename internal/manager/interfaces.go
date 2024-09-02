@@ -1,9 +1,12 @@
 package manager
 
-import "context"
+import (
+	"context"
+	"github.com/kerim-dauren/smart-terminal/internal/domain"
+)
 
 type (
 	KaspiPaymentManager interface {
-		Process(ctx context.Context, request *KaspiPaymentRequest, resultChan chan<- KaspiPaymentResponse, errorChan chan<- error)
+		Process(ctx context.Context, request *domain.KaspiPaymentRequest, resultChan chan<- *domain.KaspiPaymentResponse)
 	}
 )
