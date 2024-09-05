@@ -1,6 +1,9 @@
 package service
 
-import "context"
+import (
+	"context"
+	"github.com/kerim-dauren/smart-terminal/internal/domain"
+)
 
 type (
 	DeviceService interface {
@@ -8,6 +11,6 @@ type (
 	}
 )
 
-type KaspiCommand interface {
-	Execute(ctx context.Context, request *KaspiPaymentRequest, device *DeviceDto) (*KaspiPaymentResponse, error)
+type PaymentCommand interface {
+	Execute(ctx context.Context, request *domain.KaspiPaymentRequest, device *DeviceDto) (*domain.KaspiPaymentResponse, error)
 }

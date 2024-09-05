@@ -13,13 +13,13 @@ import (
 type kaspiPaymentManager struct {
 	logger        loggerx.Logger
 	deviceService service.DeviceService
-	kaspiCommands map[string]service.KaspiCommand
+	kaspiCommands map[string]service.PaymentCommand
 }
 
 func NewKaspiPaymentManager(
 	logger loggerx.Logger,
 	deviceService service.DeviceService,
-	kaspiCommands map[string]service.KaspiCommand,
+	kaspiCommands map[string]service.PaymentCommand,
 ) KaspiPaymentManager {
 	return &kaspiPaymentManager{
 		logger:        logger,
@@ -48,13 +48,7 @@ func (m *kaspiPaymentManager) Process(ctx context.Context, request *domain.Kaspi
 		ctxWithTimeout, cancel := context.WithTimeout(ctx, 15*time.Second)
 		defer cancel()
 
-		commandResult, err := command.Execute(ctxWithTimeout, &service.KaspiPaymentRequest{
-			TransactionID:   request.TransactionID,
-			IMEI:            request.IMEI,
-			Command:         request.Command,
-			Sum:             request.Sum,
-			TransactionDate: request.TransactionDate,
-		}, device)
+		commandResult, err := command.Execute(ctxWithTimeout, request, device)
 
 		if err != nil {
 			if errors.Is(err, context.DeadlineExceeded) {

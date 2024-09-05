@@ -2,11 +2,11 @@ package service
 
 type Services struct {
 	DeviceService DeviceService
-	KaspiCommands map[string]KaspiCommand
+	KaspiCommands map[string]PaymentCommand
 }
 
 func NewServices() *Services {
-	kaspiCommands := map[string]KaspiCommand{
+	kaspiCommands := map[string]PaymentCommand{
 		"check": NewCheckCommand(),
 		"pay":   NewPayCommand(),
 	}
